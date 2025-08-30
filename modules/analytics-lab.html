@@ -1,0 +1,96 @@
+<section id="analytics-lab" class="module">
+  <h2>深度數據分析實驗室</h2>
+  
+  <div class="prerequisite-check">
+    <div class="info-box">
+      <p>⚠️ 此模塊需要至少 10 次歷史活動數據才能進行分析</p>
+    </div>
+  </div>
+  
+  <div class="analytics-container" hidden>
+    <div class="metrics-section">
+      <h3>五大隱形指標分析</h3>
+      
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <h4>耐力衰減率</h4>
+          <div class="metric-value" id="enduranceDecline">--</div>
+          <div class="metric-description">
+            <p>(活動前段EPH - 活動後段EPH) / 活動前段EPH</p>
+            <p class="metric-warning">>15% 提示耐力不足</p>
+          </div>
+        </div>
+        
+        <div class="metric-card">
+          <h4>地形效率比</h4>
+          <div class="metric-value" id="terrainEfficiency">--</div>
+          <div class="metric-description">
+            <p>爬升段EPH / 平路EPH 和 下降段EPH / 平路EPH</p>
+            <p class="metric-warning">比值過低提示相應能力短板</p>
+          </div>
+        </div>
+        
+        <div class="metric-card">
+          <h4>技術路段EPH</h4>
+          <div class="metric-value" id="technicalEph">--</div>
+          <div class="metric-description">
+            <p>技術地形下的移動效率</p>
+            <p class="metric-warning">需用戶手動標記技術路段</p>
+          </div>
+        </div>
+        
+        <div class="metric-card">
+          <h4>疲勞積累指數</h4>
+          <div class="metric-value" id="fatigueIndex">--</div>
+          <div class="metric-description">
+            <p>急性負荷比 (ACWR)</p>
+            <p class="metric-warning">>1.5 過高風險</p>
+          </div>
+        </div>
+        
+        <div class="metric-card">
+          <h4>環境影響係數</h4>
+          <div class="metric-value" id="environmentFactor">--</div>
+          <div class="metric-description">
+            <p>不同環境溫度下的標準化EPH</p>
+            <p class="metric-warning">評估熱適應能力</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="radar-section">
+      <h3>完賽風險雷達圖</h3>
+      <div class="chart-container">
+        <canvas id="radarChart" width="800" height="400"></canvas>
+      </div>
+      
+      <div class="radar-legend">
+        <div class="legend-item">
+          <span class="legend-color" style="background-color: rgba(54, 162, 235, 0.2)"></span>
+          <span>您的表現</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-color" style="background-color: rgba(255, 99, 132, 0.2)"></span>
+          <span>賽事要求</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="report-section">
+      <h3>全面診斷報告</h3>
+      <div class="report-content" id="diagnosisReport">
+        <p>分析中...</p>
+      </div>
+      
+      <div class="actions">
+        <button id="generateReport">生成診斷報告</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script type="module" nonce="TRAILSYNC_SECURE">
+  // 安全加載模塊 JS
+  import '/assets/js/modules/analytics.js';
+</script>

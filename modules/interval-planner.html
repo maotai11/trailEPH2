@@ -1,0 +1,123 @@
+<section id="interval-planner" class="module">
+  <h2>間歇訓練規劃器</h2>
+  
+  <div class="input-section">
+    <h3>單組計算</h3>
+    <form id="singleIntervalForm">
+      <div class="form-group">
+        <label>距離 (m): 
+          <input type="number" id="intervalDistance" min="50" step="25" required>
+        </label>
+      </div>
+      <div class="form-group">
+        <label>目標時間: 
+          <input type="text" id="intervalTime" placeholder="02:30" pattern="\d{1,2}:\d{2}" required>
+        </label>
+      </div>
+      <button type="submit">計算配速</button>
+    </form>
+    
+    <div class="result-section" id="singleIntervalResult" hidden>
+      <h4>計算結果</h4>
+      <div class="result-row">
+        <span class="result-label">配速:</span>
+        <span class="result-value" id="intervalPace">0'00"</span>
+      </div>
+      <div class="result-row">
+        <span class="result-label">速度:</span>
+        <span class="result-value" id="intervalSpeed">0.0 km/h</span>
+      </div>
+    </div>
+  </div>
+  
+  <div class="workout-builder">
+    <h3>課表構建器</h3>
+    <div class="form-group">
+      <label>輸入格式 (例: 400m, 122s*5, 116s*5):</label>
+      <textarea id="workoutInput" rows="3" placeholder="400m, 122s*5, 116s*5"></textarea>
+    </div>
+    
+    <div class="form-group">
+      <label>休息時間:</label>
+      <div class="radio-group">
+        <label><input type="radio" name="restType" value="fixed" checked> 固定時間</label>
+        <label><input type="radio" name="restType" value="ratio"> 比例 (奔跑:休息)</label>
+        <label><input type="radio" name="restType" value="manual"> 手動輸入</label>
+      </div>
+    </div>
+    
+    <div class="rest-options" id="fixedRest" style="display:block;">
+      <div class="form-group">
+        <label>休息時間: 
+          <input type="text" id="fixedRestTime" value="02:00" pattern="\d{1,2}:\d{2}" required>
+        </label>
+      </div>
+    </div>
+    
+    <div class="rest-options" id="ratioRest" style="display:none;">
+      <div class="form-group">
+        <label>比例 (奔跑:休息): 
+          <input type="number" id="ratioValue" min="0.1" max="2" step="0.1" value="0.8">
+        </label>
+      </div>
+    </div>
+    
+    <div class="rest-options" id="manualRest" style="display:none;">
+      <div class="form-group">
+        <label>輸入格式 (例: 02:00*5, 01:45*5):</label>
+        <textarea id="manualRestInput" rows="2"></textarea>
+      </div>
+    </div>
+    
+    <button id="generateWorkout">生成課表</button>
+  </div>
+  
+  <div class="workout-summary" id="workoutSummary" hidden>
+    <h3>課表總覽</h3>
+    <div class="summary-grid">
+      <div class="summary-item">
+        <span class="summary-label">總距離</span>
+        <span class="summary-value" id="totalDistance">0 m</span>
+      </div>
+      <div class="summary-item">
+        <span class="summary-label">總奔跑時間</span>
+        <span class="summary-value" id="totalRunTime">0:00</span>
+      </div>
+      <div class="summary-item">
+        <span class="summary-label">總休息時間</span>
+        <span class="summary-value" id="totalRestTime">0:00</span>
+      </div>
+      <div class="summary-item">
+        <span class="summary-label">總時長</span>
+        <span class="summary-value" id="totalWorkoutTime">0:00</span>
+      </div>
+    </div>
+    
+    <h3>詳細課表</h3>
+    <div class="table-container">
+      <table id="workoutTable">
+        <thead>
+          <tr>
+            <th>組數</th>
+            <th>距離 (m)</th>
+            <th>目標時間</th>
+            <th>目標配速</th>
+            <th>休息時間</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- 動態生成 -->
+        </tbody>
+      </table>
+    </div>
+    
+    <div class="actions">
+      <button id="saveWorkout">保存至個人數據中心</button>
+    </div>
+  </div>
+</section>
+
+<script type="module" nonce="TRAILSYNC_SECURE">
+  // 安全加載模塊 JS
+  import '/assets/js/modules/interval.js';
+</script>

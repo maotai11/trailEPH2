@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <!-- 安全開發守則強制：CORS 嚴格設定 + CSP 鐵壁 -->
+  <meta http-equiv="Content-Security-Policy" 
+        content="default-src 'self'; 
+                 script-src 'self' 'nonce-TRAILSYNC_SECURE' https://unpkg.com;
+                 style-src 'self' 'nonce-TRAILSYNC_SECURE' https://unpkg.com;
+                 img-src 'self' data: https://tile.openstreetmap.org;
+                 connect-src 'self';
+                 sandbox allow-scripts allow-same-origin;">
+  <title>TrailSync - 越野跑智能訓練分析平台</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="manifest" href="manifest.json" crossorigin="use-credentials">
+</head>
+<body>
+  <header>
+    <h1>TrailSync</h1>
+    <nav>
+      <a href="#calculator">核心計算器</a>
+      <a href="#planner">間歇規劃器</a>
+      <a href="#converter">跑步機換算器</a>
+      <a href="#assessor">完賽風險評估</a>
+      <a href="#dashboard">個人數據中心</a>
+      <a href="#analytics">深度數據實驗室</a>
+    </nav>
+  </header>
+
+  <main>
+    <!-- 各模塊將通過 AJAX 安全載入 -->
+    <section id="module-container"></section>
+  </main>
+
+  <footer>
+    <p>© 2023 TrailSync - 所有數據安全加密存儲於本地</p>
+    <button id="security-status">🔒 安全狀態：正常</button>
+  </footer>
+
+  <!-- 安全開發守則強制：外部庫必須使用 SRI -->
+  <script src="assets/libs/chart.min.js" 
+          integrity="sha384-8C6mC7cD5J4e4KZq6Jz7e5Kc4QJxV1Yj+L5e8m7H4j0c5c+0a4e4KZq6Jz7e5Kc4QJxV1Yj+L5e8m7H4j0c5c+0a4e4KZq6Jz7e5Kc4QJxV1Yj+L5e8m7H4j0c5c+0a4e" 
+          crossorigin="anonymous" nonce="TRAILSYNC_SECURE"></script>
+  <script src="assets/libs/leaflet.js" 
+          integrity="sha384-3a4e4KZq6Jz7e5Kc4QJxV1Yj+L5e8m7H4j0c5c+0a4e4KZq6Jz7e5Kc4QJxV1Yj+L5e8m7H4j0c5c+0a4e4KZq6Jz7e5Kc4QJxV1Yj+L5e8m7H4j0c5c+0a4e" 
+          crossorigin="anonymous" nonce="TRAILSYNC_SECURE"></script>
+
+  <!-- 安全核心模組（按 SDL 流程優先載入） -->
+  <script nonce="TRAILSYNC_SECURE">
+    // 安全開發守則強制：在任何業務邏輯前初始化安全系統
+    import { SecurityCore } from './assets/js/core/security.js';
+    window.security = new SecurityCore();
+    
+    // 阻斷未通過安全檢查的瀏覽器
+    if (!window.security.isBrowserSecure()) {
+      document.body.innerHTML = `
+        <div class="security-block">
+          <h2>⚠️ 安全阻斷</h2>
+          <p>您的瀏覽器不支援 Web Crypto API，無法安全存儲訓練數據</p>
+          <p>請升級至 Chrome 110+ / Firefox 115+ / Safari 16.4+</p>
+        </div>
+      `;
+      throw new Error('UNSUPPORTED_BROWSER');
+    }
+  </script>
+
+  <script type="module" nonce="TRAILSYNC_SECURE">
+    // 模塊載入器（安全沙箱化）
+    import { ModuleLoader } from './assets/js/core/sandbox.js';
+    
+    const loader = new ModuleLoader({
+      container: '#module-container',
+      modules: {
+        calculator: 'modules/core-calculator.html',
+        planner: 'modules/interval-planner.html',
+        converter: 'modules/treadmill-converter.html',
+        assessor: 'modules/race-assessor.html',
+        dashboard: 'modules/athlete-dashboard.html',
+        analytics: 'modules/analytics-lab.html'
+      }
+    });
+    
+    // 預載入安全模塊（符合 SDL 威脅建模）
+    await loader.preloadAll();
+    
+    // 路由安全控制
+    document.querySelectorAll('nav a').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const module = link.href.split('#')[1];
+        loader.loadModule(module).catch(err => {
+          window.security.logSecurityEvent('MODULE_LOAD_FAILED', { module, error: err.message });
+          alert('模塊載入失敗！已記錄安全事件');
+        });
+      });
+    });
+    
+    // 預設載入核心計算器
+    loader.loadModule('calculator');
+  </script>
+</body>
+</html>

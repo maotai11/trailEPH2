@@ -1,0 +1,110 @@
+<section id="treadmill-converter" class="module">
+  <h2>跑步機換算器</h2>
+  
+  <div class="conversion-mode">
+    <h3>轉換模式</h3>
+    <div class="radio-group">
+      <label><input type="radio" name="conversionType" value="forward" checked> 正向計算 (跑步機 → 戶外)</label>
+      <label><input type="radio" name="conversionType" value="reverse"> 反向查詢 (目標爬升 → 坡度)</label>
+    </div>
+  </div>
+  
+  <div class="forward-conversion" id="forwardConversion">
+    <h3>跑步機參數</h3>
+    <div class="form-group">
+      <label>時間: 
+        <input type="text" id="treadmillTime" placeholder="00:30:00" pattern="\d{1,2}:\d{2}:\d{2}" required>
+      </label>
+    </div>
+    <div class="form-group">
+      <label>速度 (km/h): 
+        <input type="number" id="treadmillSpeed" min="1" step="0.1" required>
+      </label>
+    </div>
+    <div class="form-group">
+      <label>坡度 (%): 
+        <input type="number" id="treadmillIncline" min="0" step="0.1" required>
+      </label>
+    </div>
+    
+    <button id="calculateForward">計算等效戶外數據</button>
+    
+    <div class="result-section" id="forwardResult" hidden>
+      <h3>等效戶外數據</h3>
+      <div class="result-grid">
+        <div class="result-item">
+          <span class="result-label">總距離</span>
+          <span class="result-value" id="forwardDistance">0.0 km</span>
+        </div>
+        <div class="result-item">
+          <span class="result-label">等效爬升</span>
+          <span class="result-value" id="forwardElevation">0 m</span>
+        </div>
+        <div class="result-item">
+          <span class="result-label">總 EP</span>
+          <span class="result-value" id="forwardEp">0.0</span>
+        </div>
+        <div class="result-item">
+          <span class="result-label">平均 EPH</span>
+          <span class="result-value" id="forwardEph">0.0</span>
+        </div>
+      </div>
+      
+      <div class="actions">
+        <button id="saveForward">保存至個人數據中心</button>
+      </div>
+    </div>
+  </div>
+  
+  <div class="reverse-conversion" id="reverseConversion" style="display:none;">
+    <h3>目標參數</h3>
+    <div class="form-group">
+      <label>目標等效爬升 (m): 
+        <input type="number" id="targetElevation" min="1" step="1" required>
+      </label>
+    </div>
+    <div class="form-group">
+      <label>跑步機速度 (km/h): 
+        <input type="number" id="reverseSpeed" min="1" step="0.1" required>
+      </label>
+    </div>
+    <div class="form-group">
+      <label>跑步時間: 
+        <input type="text" id="reverseTime" placeholder="00:30:00" pattern="\d{1,2}:\d{2}:\d{2}" required>
+      </label>
+    </div>
+    
+    <button id="calculateReverse">計算推薦坡度</button>
+    
+    <div class="result-section" id="reverseResult" hidden>
+      <h3>推薦設置</h3>
+      <div class="result-grid">
+        <div class="result-item">
+          <span class="result-label">推薦坡度</span>
+          <span class="result-value" id="recommendedIncline">0.0%</span>
+        </div>
+        <div class="result-item">
+          <span class="result-label">等效爬升</span>
+          <span class="result-value" id="reverseElevation">0 m</span>
+        </div>
+        <div class="result-item">
+          <span class="result-label">總 EP</span>
+          <span class="result-value" id="reverseEp">0.0</span>
+        </div>
+        <div class="result-item">
+          <span class="result-label">平均 EPH</span>
+          <span class="result-value" id="reverseEph">0.0</span>
+        </div>
+      </div>
+      
+      <div class="actions">
+        <button id="saveReverse">保存至個人數據中心</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script type="module" nonce="TRAILSYNC_SECURE">
+  // 安全加載模塊 JS
+  import '/assets/js/modules/treadmill.js';
+</script>

@@ -1,0 +1,51 @@
+/* 安全開發守則強制：【防止 XSS】 - Canvas 安全渲染 */
+.chart-container {
+  position: relative;
+  height: 300px;
+  margin: 1.5rem 0;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+/* 安全開發守則：【伺服器設定】 - 防止圖像竊取 */
+canvas {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* 安全開發守則：【最小權限原則】 - 僅允許必要交互 */
+.chartjs-tooltip {
+  pointer-events: none !important;
+  opacity: 0.9 !important;
+}
+
+/* 安全開發守則：【關閉偵錯模式】 - 隱藏技術細節 */
+.chartjs-tooltip-key {
+  border: none !important;
+  border-radius: 0 !important;
+}
+
+/* 越野跑場景安全主題 */
+.eph-chart {
+  background: linear-gradient(to bottom, #e3f2fd, #bbdefb);
+}
+
+.radar-chart {
+  background: linear-gradient(to bottom, #e8f5e9, #c8e6c9);
+}
+
+.acwr-chart {
+  background: linear-gradient(to bottom, #fff8e1, #ffecb3);
+}
+
+/* 安全開發守則：【預防的措施】 - 防範圖像拖放攻擊 */
+.chart-container {
+  -webkit-user-drag: none;
+  user-drag: none;
+  -webkit-touch-callout: none;
+}

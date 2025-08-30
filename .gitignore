@@ -1,0 +1,24 @@
+# 安全開發守則強制：【忽略秘密檔案】
+.env
+.env.local
+.env.development
+.env.production
+
+# 安全日誌（符合守則【關閉偵錯模式】）
+security.log
+*.log
+
+# 開發環境檔案
+node_modules/
+dist/
+build/
+
+# 編輯器臨時檔案
+*.swp
+*.swo
+.DS_Store
+
+# 安全開發守則：【禁止下載關鍵檔案】
+*.env.example
+.git/
+*.htaccess
