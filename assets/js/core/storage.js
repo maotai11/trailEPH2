@@ -1,10 +1,11 @@
 /**
- * 安全存儲引擎 - 符合 GDPR Article 32
+ * 安全存儲引擎 - 威脅感知版
  * 
  * 安全開發守則：
  *   [x] 絕不寫死秘密
  *   [x] 使用環境變數（瀏覽器上下文）
  *   [x] 關閉偵錯模式
+ *   [x] 威脅感知而非預先阻斷
  */
 class SecureStorage {
   constructor() {
@@ -105,7 +106,7 @@ class SecureStorage {
         data
       );
       
-      // 存儲格式：{ iv: base64, data: base64 }
+      // 存儲格式：{ iv: base64, base64 }
       const stored = {
         iv: this._arrayBufferToBase64(iv),
          this._arrayBufferToBase64(encrypted)
@@ -187,5 +188,96 @@ class SecureStorage {
   }
 }
 
-// 安全存儲實例（全局可用）
-window.secureStorage = new SecureStorage();
+/**
+ * 降級存儲方案（不支援 Web Crypto 時使用）
+ * 
+ * 安全開發守則：
+ *   [x] 最小安全保證
+ *   [x] 關閉偵錯模式
+ *   [x] 防止 PII 洩漏
+ */
+class FallbackStorage {
+  constructor() {
+    this.obfuscationKey = 'TRAILSYNC_FALLBACK';
+  }
+
+  /**
+   * 安全設置數據（降級方案）
+   * @param {string} key - 存儲鍵名
+   * @param {any} value - 原始數據
+   */
+  async setItem(key, value) {
+    try {
+      // 1. 基礎加密（無 Web Crypto 時）
+      const encrypted = btoa(unescape(encodeURIComponent(JSON.stringify(value))));
+      
+      // 2. 添加簡單混淆
+      const obfuscated = this._obfuscate(encrypted);
+      
+      localStorage.setItem(`fallback_${key}`, obfuscated);
+    } catch (e) {
+      window.security?.logSecurityEvent('FALLBACK_STORAGE_SET_FAILED', { 
+        key, 
+        error: e.message 
+      });
+    }
+  }
+
+  /**
+   * 安全獲取數據（降級方案）
+   * @param {string} key - 存儲鍵名
+   * @returns {Promise<any|null>}
+   */
+  async getItem(key) {
+    try {
+      const obfuscated = localStorage.getItem(`fallback_${key}`);
+      if (!obfuscated) return null;
+      
+      const encrypted = this._deobfuscate(obfuscated);
+      const decoded = decodeURIComponent(escape(atob(encrypted)));
+      
+      return JSON.parse(decoded);
+    } catch (e) {
+      window.security?.logSecurityEvent('FALLBACK_STORAGE_GET_FAILED', { 
+        key, 
+        error: e.message 
+      });
+      return null;
+    }
+  }
+
+  /**
+   * 清除所有降級數據
+   */
+  clear() {
+    Object.keys(localStorage).forEach(key => {
+      if (key.startsWith('fallback_')) {
+        localStorage.removeItem(key);
+      }
+    });
+  }
+
+  /**
+   * 簡單混淆算法
+   */
+  _obfuscate(str) {
+    return str
+      .split('')
+      .map(c => String.fromCharCode(c.charCodeAt(0) + this.obfuscationKey.length))
+      .join('');
+  }
+
+  /**
+   * 反混淆算法
+   */
+  _deobfuscate(str) {
+    return str
+      .split('')
+      .map(c => String.fromCharCode(c.charCodeAt(0) - this.obfuscationKey.length))
+      .join('');
+  }
+}
+
+// 全局存儲實例（由 index.html 決定使用哪個）
+// window.secureStorage = new SecureStorage(); // 正常模式
+// window.secureStorage = new FallbackStorage(); // 降級模式

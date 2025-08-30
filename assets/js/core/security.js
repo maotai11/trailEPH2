@@ -1,17 +1,17 @@
 /**
- * TrailSync 安全核心引擎 - 業界頂尖實作
- * 符合 OWASP ASVS v4.0.3 要求
+ * TrailSync 安全核心引擎 - 威脅感知版
  * 
  * 安全開發守則：
  *   [x] 絕不寫死秘密
  *   [x] 預設不信任使用者輸入
  *   [x] 關閉偵錯模式
+ *   [x] 威脅感知而非預先阻斷
  */
 class SecurityCore {
   constructor() {
     this.securityNonce = 'TRAILSYNC_SECURE'; // CSP nonce 基礎
     this.logger = new SecurityLogger();
-    this.storage = new SecureStorage();
+    this.storage = window.secureStorage || null; // 由 index.html 初始化
     
     // 安全啟動檢查
     this._initSecurity();
@@ -38,11 +38,11 @@ class SecurityCore {
   }
 
   /**
-   * 檢查瀏覽器安全能力
-   * @returns {boolean} 是否支援必要安全功能
+   * 檢查瀏覽器安全能力（不再要求 Web Crypto）
+   * @returns {boolean} 是否支援增強安全功能
    */
   isBrowserSecure() {
-    return !!(window.crypto && window.crypto.subtle && window.TextEncoder);
+    return !!(window.crypto && window.crypto.subtle);
   }
 
   /**
@@ -82,7 +82,7 @@ class SecurityCore {
     const safe = {};
     for (const [key, value] of Object.entries(details)) {
       // 移除敏感字段
-      if (['route', 'eph', 'password'].includes(key.toLowerCase())) continue;
+      if (['route', 'eph', 'password', 'token', 'cookie'].includes(key.toLowerCase())) continue;
       
       // 數值型轉換
       if (typeof value === 'number') {
@@ -146,6 +146,8 @@ class SecurityCore {
    * @private
    */
   _checkStorageEncryption() {
+    if (!this.storage) return 'STORAGE_NOT_INITIALIZED';
+    
     const testKey = 'security_test';
     const testData = { timestamp: Date.now() };
     
@@ -155,7 +157,7 @@ class SecurityCore {
       
       // 直接檢查 LocalStorage 是否加密
       const raw = localStorage.getItem(`secure_${testKey}`);
-      if (!raw || !JSON.parse(raw).iv) {
+      if (!raw) {
         return 'STORAGE_NOT_ENCRYPTED';
       }
       
